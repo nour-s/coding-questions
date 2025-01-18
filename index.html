@@ -9,34 +9,78 @@
       href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css"
     />
     <style>
+      @import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap");
+
       body {
-        font-family: Arial, sans-serif;
+        font-family: "Roboto", Arial, sans-serif;
         margin: 0;
         padding: 0;
+        background-color: #f9f9f9;
       }
+
       .tabs {
         display: flex;
-        border-bottom: 1px solid #ccc;
+        border-bottom: 2px solid #ccc;
         overflow-x: auto;
+        background-color: #fff;
+        padding: 10px 0;
       }
+
       .tabs button {
-        padding: 10px 20px;
+        flex: 1;
+        padding: 12px 20px;
         border: none;
         background: #f0f0f0;
         cursor: pointer;
         outline: none;
-        transition: background 0.3s;
+        transition: background 0.3s, color 0.3s;
+        font-size: 16px;
+        color: #555;
       }
+
+      .tabs button:hover {
+        background: #e0e0e0;
+      }
+
       .tabs button.active {
-        background: #fff;
-        border-bottom: 2px solid #007bff;
+        background: #007bff;
+        color: #fff;
         font-weight: bold;
+        border-bottom: none;
       }
+
       .content {
         padding: 20px;
       }
+
       .hidden {
         display: none;
+      }
+
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+
+      th {
+        background-color: #007bff;
+        color: white;
+        padding: 10px;
+        text-align: left;
+      }
+
+      td {
+        padding: 8px;
+        border-bottom: 1px solid #ddd;
+      }
+
+      td a {
+        color: #007bff;
+        text-decoration: none;
+      }
+
+      td a:hover {
+        text-decoration: underline;
       }
     </style>
   </head>
@@ -52,7 +96,6 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
     <script>
-      // CSV data embedded directly into the page
       const files = {
         "Must Do Questions": `#,Topic,Question,Difficulty
 ,,,
@@ -569,7 +612,18 @@
         // Parse CSV and initialize DataTable
         const rows = csvData.split("\n").map((row) => row.split(","));
         const headers = rows.shift();
-        const data = rows;
+        const data = rows.map((row) =>
+          row.map((cell, index) => {
+            // Convert URLs into clickable links
+            if (
+              headers[index]?.toLowerCase() === "question" &&
+              cell.startsWith("http")
+            ) {
+              return `<a href="${cell}" target="_blank">${cell}</a>`;
+            }
+            return cell;
+          })
+        );
 
         $(`#${tableId}`).DataTable({
           data: data,
